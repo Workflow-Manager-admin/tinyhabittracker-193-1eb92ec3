@@ -2,17 +2,29 @@
 
 import React from "react";
 import { useAuth } from "./auth";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 
 /**
  * PUBLIC_INTERFACE
  * NavBar component
  * Shows navigation links and auth-aware options (dashboard/logout vs login/register).
  * Minimal, sticky top navigation for global layout.
+ * Highlights the active route.
  */
 export function NavBar() {
   const { user, logout, loading } = useAuth();
   const router = useRouter();
+  const pathname = usePathname();
+
+  // Utility to check if a nav link is active
+  const isActive = (href: string) => {
+    // Exact for /dashboard, /login, /register; home active only at /
+    if (href === "/") return pathname === "/";
+    if (href === "/dashboard") return pathname.startsWith("/dashboard");
+    if (href === "/login") return pathname.startsWith("/login");
+    if (href === "/register") return pathname.startsWith("/register");
+    return false;
+  };
 
   // Handle logout and route to login on success
   const handleLogout = async () => {
@@ -26,7 +38,12 @@ export function NavBar() {
       aria-label="Main navigation"
     >
       {/* Brand/Logo */}
-      <a href="/" className="text-lg font-extrabold tracking-tight text-primary hover:opacity-80 transition-all">
+      <a
+        href="/"
+        className={`text-lg font-extrabold tracking-tight text-primary hover:opacity-80 transition-all ${
+          isActive("/") ? "underline underline-offset-4" : ""
+        }`}
+      >
         TinyHabit
       </a>
       <div className="flex items-center gap-2 md:gap-4 text-xs md:text-sm">
@@ -39,14 +56,24 @@ export function NavBar() {
           <>
             <a
               href="/dashboard"
-              className="rounded px-3 py-2 bg-primary text-white font-semibold shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-primary/50 transition"
+              className={`rounded px-3 py-2 font-semibold shadow focus:outline-none focus:ring-2 transition
+                ${
+                  isActive("/dashboard")
+                    ? "bg-primary text-white underline underline-offset-4"
+                    : "bg-primary text-white hover:bg-blue-700 focus:ring-primary/50"
+                }
+              `}
             >
               Dashboard
             </a>
             <button
               type="button"
               onClick={handleLogout}
-              className="rounded px-3 py-2 bg-gray-100 dark:bg-zinc-800 text-gray-900 dark:text-zinc-100 font-semibold hover:bg-gray-200 dark:hover:bg-zinc-700 focus:outline-none focus:ring-2 focus:ring-primary/30 transition"
+              className={`rounded px-3 py-2 font-semibold focus:outline-none focus:ring-2 transition ${
+                loading
+                  ? "bg-gray-50 text-gray-400 opacity-60"
+                  : "bg-gray-100 dark:bg-zinc-800 text-gray-900 dark:text-zinc-100 hover:bg-gray-200 dark:hover:bg-zinc-700 focus:ring-primary/30"
+              }`}
               disabled={loading}
               aria-disabled={loading}
             >
@@ -63,13 +90,25 @@ export function NavBar() {
           <>
             <a
               href="/login"
-              className="rounded px-3 py-2 bg-primary text-white font-semibold shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-primary/50 transition"
+              className={`rounded px-3 py-2 font-semibold shadow focus:outline-none focus:ring-2 transition
+                ${
+                  isActive("/login")
+                    ? "bg-primary text-white underline underline-offset-4"
+                    : "bg-primary text-white hover:bg-blue-700 focus:ring-primary/50"
+                }
+              `}
             >
               Login
             </a>
             <a
               href="/register"
-              className="rounded px-3 py-2 bg-gray-100 dark:bg-zinc-800 text-gray-900 dark:text-zinc-100 font-semibold hover:bg-gray-200 dark:hover:bg-zinc-700 focus:outline-none focus:ring-2 focus:ring-primary/30 transition"
+              className={`rounded px-3 py-2 font-semibold focus:outline-none focus:ring-2 transition
+                ${
+                  isActive("/register")
+                    ? "bg-gray-200 dark:bg-zinc-700 text-primary underline underline-offset-4"
+                    : "bg-gray-100 dark:bg-zinc-800 text-gray-900 dark:text-zinc-100 hover:bg-gray-200 dark:hover:bg-zinc-700 focus:ring-primary/30"
+                }
+              `}
             >
               Register
             </a>
