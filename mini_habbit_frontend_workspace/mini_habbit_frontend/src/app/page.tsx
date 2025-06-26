@@ -7,14 +7,14 @@ import { useAuth } from "./auth";
 /**
  * PUBLIC_INTERFACE
  * Home Page ("/").
- * ONLY shows two buttons: 'Login' and 'Sign Up'—absolutely no extra content, text, description, logo, or links.
- * Uses full brand accessibility: high-contrast color palette as per BRAND_COLORS.md.
+ * Renders ONLY two buttons: 'Login' and 'Sign Up' (register), absolutely no extra text, logo, or headings.
+ * Buttons are large, responsive, centered, and use brand colors as per BRAND_COLORS.md.
  */
 export default function HomePage() {
   const { user, loading } = useAuth();
   const router = useRouter();
 
-  // Redirect immediately to dashboard if logged in
+  // If already logged in, redirect to dashboard immediately
   useEffect(() => {
     if (!loading && user) {
       router.replace("/dashboard");
@@ -26,7 +26,7 @@ export default function HomePage() {
     return null;
   }
 
-  // Unauthenticated view: STRICTLY two buttons only
+  // Logged-out/unauthenticated view: STRICTLY two buttons centered
   return (
     <main className="flex items-center justify-center min-h-screen px-4 bg-background dark:bg-dark-bg">
       <div
