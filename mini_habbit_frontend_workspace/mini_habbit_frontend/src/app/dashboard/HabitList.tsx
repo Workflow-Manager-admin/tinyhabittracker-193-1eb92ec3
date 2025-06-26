@@ -374,31 +374,59 @@ export default function HabitList({ habits }: { habits?: Habit[] }) {
             )}
           </div>
           <div className="flex items-center gap-3 overflow-x-auto">
-            {habit.week.map((day, idx) => (
-              <label
-                key={day.date}
-                className="flex flex-col items-center mx-1 w-10"
-                title={day.date}
-              >
-                <span className="text-xs mb-1 text-gray-500 dark:text-zinc-400">
-                  {weekdays[idx]}
-                </span>
-                <input
-                  type="checkbox"
-                  checked={day.done}
-                  disabled={mutation.isPending}
-                  tabIndex={-1}
-                  className="accent-primary h-5 w-5 rounded border border-gray-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 transition"
-                  onChange={(e) =>
-                    mutation.mutate({
-                      habitId: habit.id,
-                      dateStr: day.date,
-                      checked: e.target.checked,
-                    })
-                  }
-                />
-              </label>
-            ))}
+            {habit.week.map((day, idx) => {
+              // Show explicit status badge (✅/❌) next to checkbox for clarity.
+              // Click on badge toggles done, checkbox is still available and accessible.
+              return (
+                <div
+                  key={day.date}
+                  className="flex flex-col items-center mx-1 w-10"
+                  title={day.date}
+                >
+                  <span className="text-xs mb-1 text-gray-500 dark:text-zinc-400">
+                    {weekdays[idx]}
+                  </span>
+                  <button
+                    type="button"
+                    aria-label={
+                      day.done
+                        ? `Mark ${weekdays[idx]} (${day.date}) undone`
+                        : `Mark ${weekdays[idx]} (${day.date}) done`
+                    }
+                    className={`transition rounded-full text-2xl leading-none w-8 h-8 shadow-sm ${
+                      day.done
+                        ? "bg-green-100 text-green-600 border border-green-200 dark:bg-green-900 dark:border-green-900"
+                        : "bg-gray-100 text-gray-400 border border-gray-200 dark:bg-zinc-700 dark:border-zinc-900"
+                    } hover:bg-primary/20 focus:outline-none focus:ring-2 focus:ring-primary/80 select-none`}
+                    disabled={mutation.isPending}
+                    onClick={() =>
+                      mutation.mutate({
+                        habitId: habit.id,
+                        dateStr: day.date,
+                        checked: !day.done,
+                      })
+                    }
+                  >
+                    {day.done ? "✅" : "❌"}
+                  </button>
+                  <input
+                    type="checkbox"
+                    checked={day.done}
+                    disabled={mutation.isPending}
+                    tabIndex={-1}
+                    className="accent-primary h-4 w-4 rounded-md border border-gray-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 transition mt-1"
+                    aria-hidden="true"
+                    onChange={e =>
+                      mutation.mutate({
+                        habitId: habit.id,
+                        dateStr: day.date,
+                        checked: e.target.checked,
+                      })
+                    }
+                  />
+                </div>
+              );
+            })}
           </div>
         </div>
       ))}
