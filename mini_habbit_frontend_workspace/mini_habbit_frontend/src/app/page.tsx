@@ -33,8 +33,8 @@ export default function HomePage() {
 
   // Show minimalist landing (only if not logged in)
   return (
-    <main className="flex flex-col items-center justify-center min-h-screen px-3 bg-white dark:bg-dark-bg">
-      <div className="w-full max-w-md rounded-lg border border-muted dark:border-dark-muted shadow-lg p-8 flex flex-col items-center gap-4 bg-white dark:bg-dark-surface">
+    <main className="flex flex-col items-center justify-center min-h-screen px-3 bg-background dark:bg-dark-bg">
+      <div className="w-full max-w-md rounded-lg border border-muted dark:border-dark-muted shadow-lg p-8 flex flex-col items-center gap-4 bg-background dark:bg-dark-surface">
         <span
           className="text-4xl font-extrabold tracking-tight mb-2"
           style={{ color: "var(--contrast-gray, #374151)" }}
@@ -50,7 +50,7 @@ export default function HomePage() {
         </span>
         <a
           href="/register"
-          className="mt-4 px-6 py-2 rounded font-semibold text-lg transition shadow focus:outline-none focus:ring-2 focus:ring-primary"
+          className="mt-4 px-6 py-2 rounded font-semibold text-lg transition shadow focus:outline-none focus:ring-2 focus:ring-sunshine"
           style={{
             backgroundColor: "var(--sunshine, #facc15)",
             color: "var(--contrast-gray, #374151)",
@@ -62,7 +62,8 @@ export default function HomePage() {
           href="/login"
           className="text-sm mt-2 hover:text-primary hover:underline transition"
           style={{
-            color: "#2563eb",
+            color: "var(--contrast-gray, #374151)",
+            opacity: 0.9,
           }}
         >
           Already have an account? Sign In
