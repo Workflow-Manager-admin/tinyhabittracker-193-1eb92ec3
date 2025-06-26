@@ -7,8 +7,8 @@ import { useAuth } from "./auth";
 /**
  * PUBLIC_INTERFACE
  * Home Page ("/").
- * - Strict minimalist: Only shows Login and Sign Up options as CTA buttons. Removes all text, description, logo, or graphics.
- * - Brand palette and modern accessibility.
+ * ONLY shows two buttons: 'Login' and 'Sign Up'—absolutely no extra content, text, description, logo, or links.
+ * Uses full brand accessibility: high-contrast color palette as per BRAND_COLORS.md.
  */
 export default function HomePage() {
   const { user, loading } = useAuth();
@@ -21,50 +21,43 @@ export default function HomePage() {
     }
   }, [user, loading, router]);
 
-  // While checking auth, show nothing (or a subtle loading).
   if (loading) {
-    return (
-      <main className="flex flex-col items-center justify-center min-h-screen px-2">
-        <span className="text-gray-500 dark:text-zinc-400 text-lg" aria-live="polite">Loading…</span>
-      </main>
-    );
+    // Show nothing while loading auth state to prevent layout flash
+    return null;
   }
 
-  // Only show Login and Sign Up options for unauthenticated users
+  // Unauthenticated view: STRICTLY two buttons only
   return (
-    <main className="flex flex-col items-center justify-center min-h-screen px-3 bg-background dark:bg-dark-bg">
+    <main className="flex items-center justify-center min-h-screen px-4 bg-background dark:bg-dark-bg">
       <div
-        className="w-full max-w-xs flex flex-col gap-5 items-center rounded-xl shadow-md border border-muted dark:border-dark-muted p-8 bg-white dark:bg-dark-surface"
-        style={{
-          background: "var(--background, #fff)",
-          borderColor: "var(--muted, #e5e7eb)"
-        }}
+        className="flex flex-col gap-6 w-full max-w-xs p-0 m-0"
+        aria-label="Welcome actions"
       >
         <a
           href="/login"
-          className="block w-full text-center rounded-lg text-lg font-bold px-6 py-3 mb-1 bg-primary text-white shadow focus:outline-none focus:ring-4 focus:ring-primary/30 hover:bg-primary/90 transition"
+          className="w-full rounded-lg text-lg font-bold py-3 px-6 bg-primary text-white shadow focus:outline-none focus:ring-4 focus:ring-primary/30 hover:bg-primary/90 transition"
           style={{
             backgroundColor: "var(--primary, #2563eb)",
             color: "#fff",
             border: "2px solid var(--primary, #2563eb)",
-            letterSpacing: 0.02
+            letterSpacing: 0.02,
           }}
           role="button"
-          tabIndex={0}
+          aria-label="Login"
         >
           Login
         </a>
         <a
           href="/register"
-          className="block w-full text-center rounded-lg text-lg font-bold px-6 py-3 bg-sunshine text-contrastGray shadow focus:outline-none focus:ring-4 focus:ring-sunshine/30 hover:bg-sunshine/90 hover:text-primary transition"
+          className="w-full rounded-lg text-lg font-bold py-3 px-6 bg-sunshine text-contrastGray shadow focus:outline-none focus:ring-4 focus:ring-sunshine/30 hover:bg-sunshine/90 hover:text-primary transition"
           style={{
             backgroundColor: "var(--sunshine, #facc15)",
             color: "var(--contrast-gray, #374151)",
             border: "2px solid var(--sunshine, #facc15)",
-            letterSpacing: 0.02
+            letterSpacing: 0.02,
           }}
           role="button"
-          tabIndex={0}
+          aria-label="Sign Up"
         >
           Sign Up
         </a>
