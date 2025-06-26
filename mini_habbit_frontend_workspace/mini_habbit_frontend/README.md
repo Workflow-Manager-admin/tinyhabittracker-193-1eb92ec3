@@ -1,5 +1,44 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Environment Variables for API Base URL
+
+The frontend fetches data from your backend API. To make this work in different environments (development, staging, production), set the API base URL using an environment variable.
+
+1. Copy `.env.local.example` to `.env.local` and update the value as needed:
+   ```bash
+   cp .env.local.example .env.local
+   ```
+
+2. Edit `.env.local`:
+   ```
+   NEXT_PUBLIC_BACKEND_URL=http://localhost:3000   # Change to your backend's URL as needed
+   ```
+   - In development: use `http://localhost:3000` if running the backend locally.
+   - In production: set this to your deployed backend API, e.g. `https://api.myhabitapp.com`
+
+Next.js exposes `NEXT_PUBLIC_*` env vars to the browser, allowing the frontend React code and API utilities to switch the backend base URL easily.
+
+### Development
+
+- Both frontend and backend running locally (default):
+  ```
+  NEXT_PUBLIC_BACKEND_URL=http://localhost:3000
+  ```
+- Start the frontend:
+  ```
+  npm run dev
+  ```
+- The app will connect to your local backend on port 3000.
+
+### Production/Deployment
+
+- Set `NEXT_PUBLIC_BACKEND_URL` in your hosting platform/environment (e.g. Vercel, Netlify).
+- All API fetches will use this base URL.
+
+**Changing environments does not require code changes—just update `.env.local` or your hosting environment vars!**
+
+---
+
 ## Getting Started
 
 First, run the development server:

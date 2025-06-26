@@ -9,8 +9,15 @@ export default function HomeStatusFetch() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Fetch status from backend
-    fetch("http://localhost:4000/")
+    // Fetch status from backend (uses env var for backend base URL)
+    const base =
+      typeof window !== "undefined"
+        ? (process.env.NEXT_PUBLIC_BACKEND_URL ||
+            (window as any).NEXT_PUBLIC_BACKEND_URL ||
+            "http://localhost:3000")
+        : process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3000";
+
+    fetch(`${base}/`)
       .then(async (res) => {
         if (!res.ok) throw new Error("Failed to fetch backend status");
         // Try to parse JSON, fallback to plain text for legacy or custom responses
