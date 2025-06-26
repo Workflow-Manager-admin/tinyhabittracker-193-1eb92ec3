@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import HabitList from "./HabitList";
 
 /**
  * Dashboard Page
@@ -9,30 +10,6 @@ import React from "react";
  * Displays a sidebar/navbar and main content listing user habits.
  * Uses sample/mock data for now; later will use fetched user habits.
  */
-const mockHabits = [
-  {
-    id: 1,
-    name: "Read 10 pages",
-    done: false,
-    streak: 2,
-  },
-  {
-    id: 2,
-    name: "Exercise 20 min",
-    done: true,
-    streak: 10,
-  },
-  {
-    id: 3,
-    name: "Meditate 5 min",
-    done: false,
-    streak: 0,
-  },
-];
-
-function classNames(...classes: string[]) {
-  return classes.filter(Boolean).join(" ");
-}
 
 export default function DashboardPage() {
   return (
@@ -94,50 +71,7 @@ export default function DashboardPage() {
           My Habits
         </h1>
         <section className="w-full max-w-2xl">
-          <div className="flex flex-col gap-4">
-            {mockHabits.length === 0 && (
-              <div className="p-6 text-center text-gray-500 dark:text-zinc-400">
-                No habits yet! Click <span className="font-semibold">Add</span> to create your first habit.
-              </div>
-            )}
-            {mockHabits.map((habit) => (
-              <div
-                key={habit.id}
-                className="flex items-center justify-between bg-white dark:bg-zinc-800 rounded-xl shadow border border-gray-200 dark:border-zinc-700 px-4 py-3"
-              >
-                <div className="flex items-center gap-4">
-                  <input
-                    type="checkbox"
-                    checked={habit.done}
-                    readOnly
-                    className="form-checkbox accent-primary h-5 w-5"
-                    tabIndex={-1}
-                  />
-                  <span
-                    className={classNames(
-                      "text-base font-medium",
-                      habit.done
-                        ? "line-through text-gray-400 dark:text-zinc-500"
-                        : "text-gray-900 dark:text-zinc-100"
-                    )}
-                  >
-                    {habit.name}
-                  </span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <span className="text-xs bg-blue-50 text-blue-700 dark:bg-blue-900 dark:text-blue-200 rounded px-2 py-1 font-mono">
-                    {habit.streak} 🔥
-                  </span>
-                  <button
-                    className="text-xs bg-accent hover:bg-primary hover:text-white text-primary dark:text-zinc-900 px-2 py-1 rounded font-semibold transition"
-                    // onClick={} // add action later
-                  >
-                    Log
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
+          <HabitList />
           <div className="mt-8 flex justify-center">
             <button className="bg-primary hover:bg-blue-700 text-white px-5 py-2 rounded font-semibold transition">
               + Add Habit
