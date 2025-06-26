@@ -222,25 +222,40 @@ export default function HabitList({ habits }: { habits?: Habit[] }) {
           }}
         >
           <input
-            className="rounded border border-gray-300 dark:border-zinc-700 p-2 bg-white dark:bg-zinc-900 text-gray-900 dark:text-gray-200 focus:border-primary focus:outline-none transition w-full max-w-xs"
+            className="rounded border border-amber-200 dark:border-yellow-700 p-2 bg-white dark:bg-zinc-900 text-contrastGray focus:border-sunshine focus:outline-none transition w-full max-w-xs"
             placeholder="Habit name..."
             value={newHabitName}
             onChange={(e) => setNewHabitName(e.target.value)}
             disabled={createHabitMutation.isPending}
             autoFocus
             maxLength={40}
+            style={{
+              backgroundColor: "var(--surface, #fff)",
+              color: "var(--contrast-gray, #374151)",
+              borderColor: "#fde68a",
+            }}
           />
           <button
             type="submit"
-            className="bg-primary hover:bg-blue-700 text-white rounded px-4 py-2 font-semibold transition disabled:opacity-70"
+            className="bg-sunshine hover:bg-amber-300 text-contrastGray rounded px-4 py-2 font-semibold transition disabled:opacity-70 border border-goldenrod-300"
             disabled={createHabitMutation.isPending}
+            style={{
+              backgroundColor: "var(--sunshine, #facc15)",
+              color: "var(--contrast-gray, #374151)",
+              borderColor: "#ffb700"
+            }}
           >
             Add
           </button>
           <button
             type="button"
-            className="ml-1 px-3 py-2 rounded text-xs text-gray-700 dark:text-zinc-300 bg-gray-100 dark:bg-zinc-700 hover:bg-gray-200 dark:hover:bg-zinc-600 transition"
+            className="ml-1 px-3 py-2 rounded text-xs text-contrastGray bg-amber-50 dark:bg-zinc-700 hover:bg-amber-100 dark:hover:bg-yellow-700 transition border border-amber-200"
             disabled={createHabitMutation.isPending}
+            style={{
+              color: "var(--contrast-gray, #374151)",
+              backgroundColor: "#fef3c7",
+              borderColor: "#fde68a"
+            }}
             onClick={() => {
               setShowNewForm(false);
               setFormError(null);
@@ -252,7 +267,12 @@ export default function HabitList({ habits }: { habits?: Habit[] }) {
       ) : (
         <div className="flex justify-end mb-2">
           <button
-            className="bg-primary hover:bg-blue-700 text-white px-4 py-2 rounded font-semibold transition"
+            className="bg-sunshine hover:bg-amber-300 text-contrastGray px-4 py-2 rounded font-semibold transition"
+            style={{
+              backgroundColor: "var(--sunshine, #facc15)",
+              color: "var(--contrast-gray, #374151)",
+              boxShadow: "0 1px 8px 0 #ffe06618"
+            }}
             onClick={() => setShowNewForm(true)}
           >
             + Add Habit
@@ -275,7 +295,12 @@ export default function HabitList({ habits }: { habits?: Habit[] }) {
       {habitsToRender.map((habit) => (
         <div
           key={habit.id}
-          className="flex flex-col sm:flex-row sm:items-center justify-between bg-white dark:bg-zinc-800 rounded-xl shadow border border-gray-200 dark:border-zinc-700 px-2 sm:px-4 py-3 sm:py-4 transition w-full max-w-full"
+          className="flex flex-col sm:flex-row sm:items-center justify-between rounded-xl shadow border px-2 sm:px-4 py-3 sm:py-4 transition w-full max-w-full"
+          style={{
+            background: "var(--surface, #fff)",
+            borderColor: "#fde68a",
+            boxShadow: "0 2px 14px 0 #fde04722"
+          }}
         >
           <div className="flex-1 min-w-0 flex items-center gap-2 sm:gap-3 mb-2 sm:mb-0">
             {editingHabitId === habit.id ? (
@@ -293,7 +318,7 @@ export default function HabitList({ habits }: { habits?: Habit[] }) {
               >
                 <input
                   ref={editInputRef}
-                  className="rounded border border-gray-300 dark:border-zinc-700 p-2 bg-white dark:bg-zinc-900 text-gray-900 dark:text-gray-200 focus:border-primary focus:outline-none transition min-w-0 flex-1"
+                  className="rounded border border-amber-200 dark:border-yellow-700 p-2 bg-white dark:bg-zinc-900 text-contrastGray focus:border-sunshine focus:outline-none transition min-w-0 flex-1"
                   placeholder="Edit habit name..."
                   value={editInputValue}
                   onChange={e => setEditInputValue(e.target.value)}
@@ -310,56 +335,77 @@ export default function HabitList({ habits }: { habits?: Habit[] }) {
                   maxLength={40}
                   disabled={editMutation.isPending}
                   autoFocus
+                  style={{
+                    backgroundColor: "var(--surface, #fff)",
+                    color: "var(--contrast-gray, #374151)",
+                    borderColor: "#fde68a"
+                  }}
                 />
                 <button
                   type="submit"
-                  className="bg-primary hover:bg-blue-700 text-white rounded px-3 py-2 ml-1 font-semibold transition disabled:opacity-70"
+                  className="bg-sunshine hover:bg-amber-300 text-contrastGray rounded px-3 py-2 ml-1 font-semibold transition border border-goldenrod-300 disabled:opacity-70"
                   disabled={
                     editMutation.isPending ||
                     !editInputValue.trim() ||
                     editInputValue.trim() === habit.name
                   }
                   title="Save"
+                  style={{
+                    backgroundColor: "var(--sunshine, #facc15)",
+                    color: "var(--contrast-gray, #374151)",
+                    borderColor: "#ffb700"
+                  }}
                 >
                   Save
                 </button>
                 <button
                   type="button"
-                  className="ml-1 px-2 py-2 rounded text-xs text-gray-700 dark:text-zinc-300 bg-gray-100 dark:bg-zinc-700 hover:bg-gray-200 dark:hover:bg-zinc-600 transition"
+                  className="ml-1 px-2 py-2 rounded text-xs text-contrastGray bg-amber-50 dark:bg-zinc-700 hover:bg-amber-100 dark:hover:bg-yellow-700 transition border border-amber-200"
                   onClick={() => {
                     setEditingHabitId(null);
                     setEditInputValue("");
                   }}
                   disabled={editMutation.isPending}
                   title="Cancel"
+                  style={{
+                    color: "var(--contrast-gray, #374151)",
+                    backgroundColor: "#fef3c7",
+                    borderColor: "#fde68a"
+                  }}
                 >
                   Cancel
                 </button>
               </form>
             ) : (
               <>
-                <span className="text-base font-semibold truncate text-gray-900 dark:text-zinc-100">
+                <span className="text-base font-semibold truncate"
+                  style={{color:"var(--contrast-gray,#374151)"}}
+                >
                   {habit.name}
                 </span>
                 <button
                   type="button"
-                  className="ml-2 px-2 py-1 rounded text-xs text-gray-700 dark:text-zinc-200 bg-gray-100 dark:bg-zinc-700 hover:bg-gray-200 dark:hover:bg-zinc-600 transition"
+                  className="ml-2 px-2 py-1 rounded text-xs text-contrastGray bg-amber-100 hover:bg-sunshine border border-amber-200 dark:text-zinc-200 dark:bg-yellow-900 dark:border-yellow-700 dark:hover:bg-yellow-700 transition"
                   onClick={() => {
                     setEditingHabitId(habit.id);
                     setEditInputValue(habit.name);
-                    // focus handled by autoFocus, but ref is for future/UX if needed
                     setTimeout(() => {
                       editInputRef.current?.focus();
                     }, 0);
                   }}
                   disabled={editMutation.isPending}
                   title="Edit habit name"
+                  style={{
+                    color: "var(--contrast-gray, #374151)",
+                    backgroundColor: "#fef3c7",
+                    borderColor: "#fde68a"
+                  }}
                 >
                   Edit
                 </button>
                 <button
                   type="button"
-                  className="ml-1 px-2 py-1 rounded text-xs text-red-600 border border-red-200 hover:bg-red-50 dark:text-red-400 dark:border-red-700 dark:hover:bg-red-900 transition"
+                  className="ml-1 px-2 py-1 rounded text-xs text-amber-900 border border-amber-300 hover:bg-amber-200 dark:text-yellow-400 dark:border-yellow-700 dark:hover:bg-yellow-900 transition"
                   onClick={() => {
                     if (window.confirm("Delete this habit? This cannot be undone.")) {
                       deleteHabitMutation.mutate(habit.id);
@@ -367,6 +413,11 @@ export default function HabitList({ habits }: { habits?: Habit[] }) {
                   }}
                   disabled={deleteHabitMutation.isPending}
                   title="Delete habit"
+                  style={{
+                    color: "#78350f", // dark amber/dark yellow
+                    borderColor: "#f59e0b",
+                    backgroundColor: "transparent"
+                  }}
                 >
                   Delete
                 </button>
@@ -377,13 +428,19 @@ export default function HabitList({ habits }: { habits?: Habit[] }) {
             {habit.week.map((day, idx) => {
               // Show explicit status badge (✅/❌) next to checkbox for clarity.
               // Click on badge toggles done, checkbox is still available and accessible.
+              const checkedBg = "bg-sunshine border-goldenrod-400 text-contrastGray";
+              const checkedDarkBg = "dark:bg-yellow-700 dark:border-yellow-500 dark:text-yellow-50";
+              const uncheckedBg = "bg-muted text-contrastGray border-amber-200";
+              const uncheckedDarkBg = "dark:bg-zinc-700 dark:border-zinc-700 dark:text-yellow-100";
               return (
                 <div
                   key={day.date}
                   className="flex flex-col items-center mx-0 sm:mx-1 w-10 min-w-[2.5rem] max-w-[2.7rem]"
                   title={day.date}
                 >
-                  <span className="text-[11px] sm:text-xs mb-1 text-gray-500 dark:text-zinc-400">
+                  <span className="text-[11px] sm:text-xs mb-1"
+                    style={{color:"#a16207"}}
+                  >
                     {weekdays[idx]}
                   </span>
                   <button
@@ -393,11 +450,28 @@ export default function HabitList({ habits }: { habits?: Habit[] }) {
                         ? `Mark ${weekdays[idx]} (${day.date}) undone`
                         : `Mark ${weekdays[idx]} (${day.date}) done`
                     }
-                    className={`transition rounded-full text-xl sm:text-2xl leading-none w-8 h-8 shadow-sm ${
+                    className={`
+                      transition rounded-full text-xl sm:text-2xl leading-none w-8 h-8 shadow-sm border
+                      ${
+                        day.done
+                          ? `${checkedBg} ${checkedDarkBg}`
+                          : `${uncheckedBg} ${uncheckedDarkBg}`
+                      }
+                      hover:bg-amber-200 focus:outline-none focus:ring-2 focus:ring-sunshine/80 select-none
+                    `}
+                    style={
                       day.done
-                        ? "bg-green-100 text-green-600 border border-green-200 dark:bg-green-900 dark:border-green-900"
-                        : "bg-gray-100 text-gray-400 border border-gray-200 dark:bg-zinc-700 dark:border-zinc-900"
-                    } hover:bg-primary/20 focus:outline-none focus:ring-2 focus:ring-primary/80 select-none`}
+                        ? {
+                            backgroundColor: "var(--sunshine, #facc15)",
+                            color: "var(--contrast-gray, #374151)",
+                            borderColor: "#ffb700"
+                          }
+                        : {
+                            backgroundColor: "#fef3c7",
+                            color: "#735506",
+                            borderColor: "#fde68a"
+                          }
+                    }
                     disabled={mutation.isPending}
                     onClick={() =>
                       mutation.mutate({
@@ -407,14 +481,18 @@ export default function HabitList({ habits }: { habits?: Habit[] }) {
                       })
                     }
                   >
-                    {day.done ? "✅" : "❌"}
+                    {day.done ? (
+                      <span style={{fontWeight: "bold"}}>✔</span>
+                    ) : (
+                      <span style={{fontWeight: "bold", opacity: 0.38}}>–</span>
+                    )}
                   </button>
                   <input
                     type="checkbox"
                     checked={day.done}
                     disabled={mutation.isPending}
                     tabIndex={-1}
-                    className="accent-primary h-4 w-4 rounded-md border border-gray-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 transition mt-1"
+                    className="accent-sunshine h-4 w-4 rounded-md border border-amber-200 bg-white dark:bg-zinc-900 transition mt-1"
                     aria-hidden="true"
                     onChange={e =>
                       mutation.mutate({
@@ -423,6 +501,11 @@ export default function HabitList({ habits }: { habits?: Habit[] }) {
                         checked: e.target.checked,
                       })
                     }
+                    style={{
+                      accentColor: "#facc15",
+                      borderColor: "#fde68a",
+                      backgroundColor: "#fff"
+                    }}
                   />
                 </div>
               );
