@@ -72,11 +72,6 @@ export default function DashboardPage() {
         </h1>
         <section className="w-full max-w-2xl">
           <HabitList />
-          <div className="mt-8 flex justify-center">
-            <button className="bg-primary hover:bg-blue-700 text-white px-5 py-2 rounded font-semibold transition">
-              + Add Habit
-            </button>
-          </div>
         </section>
       </main>
     </div>

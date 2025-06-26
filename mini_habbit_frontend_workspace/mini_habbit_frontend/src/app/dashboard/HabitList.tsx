@@ -2,7 +2,7 @@
 
 import React from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { fetchHabitsWithLogs, markHabitCheckmark } from "./api";
+import { fetchHabitsWithLogs, markHabitCheckmark, createHabit } from "./api";
 
 /**
  * PUBLIC_INTERFACE
@@ -30,7 +30,12 @@ const weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 export default function HabitList({ habits }: { habits?: Habit[] }) {
   const queryClient = useQueryClient();
 
-  // use data from props (custom dashboard page) or else fetch
+  // --- New Habit creation form state ---
+  const [showNewForm, setShowNewForm] = React.useState(false);
+  const [newHabitName, setNewHabitName] = React.useState("");
+  const [formError, setFormError] = React.useState<string | null>(null);
+
+  // React Query: fetching habits
   const {
     data: habitsData = [],
     isLoading,
@@ -53,7 +58,7 @@ export default function HabitList({ habits }: { habits?: Habit[] }) {
       dateStr: string;
       checked: boolean;
     }) => markHabitCheckmark(habitId, dateStr, checked),
-    // Optimistic UI: update cache
+    // Optimistic UI
     onMutate: async ({ habitId, dateStr, checked }) => {
       await queryClient.cancelQueries({ queryKey: ["habits-with-logs"] });
       const previous = queryClient.getQueryData<Habit[]>(["habits-with-logs"]);
@@ -76,7 +81,41 @@ export default function HabitList({ habits }: { habits?: Habit[] }) {
       return { previous };
     },
     onError: (_err, _variables, context) => {
-      // revert
+      if (context?.previous) {
+        queryClient.setQueryData(["habits-with-logs"], context.previous);
+      }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["habits-with-logs"] });
+    },
+  });
+
+  // --- Mutation for creating new habit with optimistic update ---
+  const createHabitMutation = useMutation({
+    mutationFn: async (name: string) => createHabit(name),
+    onMutate: async (name: string) => {
+      setFormError(null);
+      setShowNewForm(false);
+      setNewHabitName("");
+      await queryClient.cancelQueries({ queryKey: ["habits-with-logs"] });
+      const previous = queryClient.getQueryData<Habit[]>(["habits-with-logs"]);
+      // Optimistically add a new habit
+      const fakeId = Date.now() * -1; // Unique negative id to avoid collision
+      const startOfWeek = getStartOfWeek(new Date());
+      const week: DailyStatus[] = Array(7)
+        .fill(0)
+        .map((_, idx) => {
+          const date = new Date(startOfWeek);
+          date.setDate(startOfWeek.getDate() + idx);
+          return { date: date.toISOString().slice(0, 10), done: false };
+        });
+      queryClient.setQueryData<Habit[]>(["habits-with-logs"], (old) =>
+        old ? [{ id: fakeId, name, week }, ...old] : [{ id: fakeId, name, week }]
+      );
+      return { previous, fakeId };
+    },
+    onError: (err: any, _vars, context) => {
+      setFormError(err?.message || "Could not create habit.");
       if (context?.previous) {
         queryClient.setQueryData(["habits-with-logs"], context.previous);
       }
@@ -103,8 +142,68 @@ export default function HabitList({ habits }: { habits?: Habit[] }) {
     );
   }
 
+  // --- UI (with new habit form) ---
   return (
     <div className="flex flex-col gap-6 w-full">
+      {/* --- New Habit Form section --- */}
+      {showNewForm ? (
+        <form
+          className="flex gap-2 mb-2 items-center"
+          onSubmit={async (e) => {
+            e.preventDefault();
+            if (!newHabitName.trim()) {
+              setFormError("Please enter a habit name.");
+              return;
+            }
+            createHabitMutation.mutate(newHabitName.trim());
+          }}
+        >
+          <input
+            className="rounded border border-gray-300 dark:border-zinc-700 p-2 bg-white dark:bg-zinc-900 text-gray-900 dark:text-gray-200 focus:border-primary focus:outline-none transition w-full max-w-xs"
+            placeholder="Habit name..."
+            value={newHabitName}
+            onChange={(e) => setNewHabitName(e.target.value)}
+            disabled={createHabitMutation.isPending}
+            autoFocus
+            maxLength={40}
+          />
+          <button
+            type="submit"
+            className="bg-primary hover:bg-blue-700 text-white rounded px-4 py-2 font-semibold transition disabled:opacity-70"
+            disabled={createHabitMutation.isPending}
+          >
+            Add
+          </button>
+          <button
+            type="button"
+            className="ml-1 px-3 py-2 rounded text-xs text-gray-700 dark:text-zinc-300 bg-gray-100 dark:bg-zinc-700 hover:bg-gray-200 dark:hover:bg-zinc-600 transition"
+            disabled={createHabitMutation.isPending}
+            onClick={() => {
+              setShowNewForm(false);
+              setFormError(null);
+            }}
+          >
+            Cancel
+          </button>
+        </form>
+      ) : (
+        <div className="flex justify-end mb-2">
+          <button
+            className="bg-primary hover:bg-blue-700 text-white px-4 py-2 rounded font-semibold transition"
+            onClick={() => setShowNewForm(true)}
+          >
+            + Add Habit
+          </button>
+        </div>
+      )}
+
+      {formError && (
+        <div className="text-red-600 bg-red-50 p-2 rounded text-sm text-center border border-red-200 mb-2">
+          {formError}
+        </div>
+      )}
+
+      {/* --- Empty state info message --- */}
       {habitsToRender.length === 0 && (
         <div className="p-6 text-center text-gray-500 dark:text-zinc-400">
           No habits yet! Click <span className="font-semibold">Add</span> to create your first habit.
@@ -147,4 +246,12 @@ export default function HabitList({ habits }: { habits?: Habit[] }) {
       ))}
     </div>
   );
+}
+
+// Helper for start of week (Sunday)
+function getStartOfWeek(date: Date): Date {
+  const d = new Date(date);
+  d.setHours(0, 0, 0, 0);
+  d.setDate(d.getDate() - d.getDay());
+  return d;
 }

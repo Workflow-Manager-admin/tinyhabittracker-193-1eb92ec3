@@ -88,6 +88,25 @@ export async function markHabitCheckmark(
   }
 }
 
+/**
+ * PUBLIC_INTERFACE
+ * Create a new habit (POST /api/habits).
+ * @param name: string
+ * Returns: the created habit.
+ */
+export async function createHabit(name: string): Promise<{ id: number; name: string }> {
+  const res = await fetch(`${API_BASE}/api/habits`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify({ name }),
+  });
+  if (!res.ok) {
+    throw new Error((await res.json())?.error || "Failed to create habit");
+  }
+  return res.json();
+}
+
 // Helper for start of week (Sunday)
 function getStartOfWeek(date: Date): Date {
   const d = new Date(date);
