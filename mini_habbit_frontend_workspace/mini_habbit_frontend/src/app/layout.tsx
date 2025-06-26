@@ -4,6 +4,7 @@ import "./globals.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import React from "react";
+import { AuthProvider } from "./auth";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -33,11 +34,13 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <QueryClientProvider client={queryClient}>
-          {children}
-          {/* React Query DevTools (visible during development) */}
-          <ReactQueryDevtools initialIsOpen={false} />
-        </QueryClientProvider>
+        <AuthProvider>
+          <QueryClientProvider client={queryClient}>
+            {children}
+            {/* React Query DevTools (visible during development) */}
+            <ReactQueryDevtools initialIsOpen={false} />
+          </QueryClientProvider>
+        </AuthProvider>
       </body>
     </html>
   );

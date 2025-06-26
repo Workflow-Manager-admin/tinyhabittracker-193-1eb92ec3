@@ -1,29 +1,40 @@
 "use client";
 
 import React, { useState } from "react";
+import { useAuth } from "../auth";
+import { useRouter } from "next/navigation";
 
 /**
  * Login Page
  * Route: /login
  * PUBLIC_INTERFACE
  * A simple login form with email and password, styled using Tailwind CSS.
- * API integration will be connected later.
+ * Auth API integration.
  */
 export default function LoginPage() {
+  const { login, loading, error, user } = useAuth();
+  const router = useRouter();
   const [form, setForm] = useState({ email: "", password: "" });
   const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [fieldError, setFieldError] = useState<string | null>(null);
 
-  // Placeholder handler for demo purposes
+  // Redirect if already logged in
+  React.useEffect(() => {
+    if (user) router.replace("/dashboard");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setFieldError(null);
     setSubmitting(true);
-    setError(null);
-    // TODO: connect to real auth API
-    setTimeout(() => {
-      setSubmitting(false);
-      setError("Login is not yet implemented.");
-    }, 700);
+    const didLogin = await login(form.email, form.password);
+    setSubmitting(false);
+    if (didLogin) {
+      router.replace("/dashboard");
+    } else {
+      setFieldError(error || "Login failed.");
+    }
   };
 
   return (
@@ -42,7 +53,7 @@ export default function LoginPage() {
               onChange={(e) =>
                 setForm((f) => ({ ...f, email: e.target.value }))
               }
-              disabled={submitting}
+              disabled={submitting || loading}
               autoComplete="email"
             />
           </label>
@@ -58,16 +69,16 @@ export default function LoginPage() {
               onChange={(e) =>
                 setForm((f) => ({ ...f, password: e.target.value }))
               }
-              disabled={submitting}
+              disabled={submitting || loading}
               autoComplete="current-password"
             />
           </label>
           <button
             type="submit"
             className="mt-2 bg-primary hover:bg-blue-700 text-white font-semibold rounded p-2 transition-colors disabled:opacity-70"
-            disabled={submitting}
+            disabled={submitting || loading}
           >
-            {submitting ? "Logging in..." : "Login"}
+            {(submitting || loading) ? "Logging in..." : "Login"}
           </button>
           <div className="flex justify-between text-xs mt-2">
             <a
@@ -77,9 +88,9 @@ export default function LoginPage() {
               Need an account?
             </a>
           </div>
-          {error && (
+          {(fieldError || error) && (
             <div className="text-red-600 bg-red-50 p-2 rounded text-sm text-center border border-red-200">
-              {error}
+              {fieldError || error}
             </div>
           )}
         </form>
