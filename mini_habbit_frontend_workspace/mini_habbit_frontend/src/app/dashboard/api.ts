@@ -11,14 +11,24 @@ const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3000";
  * Returns: the updated habit object.
  */
 export async function editHabitName(id: number, name: string): Promise<{ id: number; name: string }> {
-  const res = await fetch(`${API_BASE}/api/habits/${id}`, {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    credentials: "include",
-    body: JSON.stringify({ name }),
-  });
+  let res: Response;
+  try {
+    res = await fetch(`${API_BASE}/api/habits/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ name }),
+    });
+  } catch (err: any) {
+    throw new Error("Network error (failed to update habit): " + (err?.message || err));
+  }
   if (!res.ok) {
-    throw new Error((await res.json())?.error || "Failed to update habit name");
+    let reason = "Failed to update habit name";
+    try {
+      const data = await res.json();
+      reason = data?.error || reason;
+    } catch {}
+    throw new Error(reason);
   }
   return res.json();
 }
@@ -30,10 +40,15 @@ export async function editHabitName(id: number, name: string): Promise<{ id: num
  * Returns: nothing if successful, throws error on failure.
  */
 export async function deleteHabit(id: number): Promise<void> {
-  const res = await fetch(`${API_BASE}/api/habits/${id}`, {
-    method: "DELETE",
-    credentials: "include",
-  });
+  let res: Response;
+  try {
+    res = await fetch(`${API_BASE}/api/habits/${id}`, {
+      method: "DELETE",
+      credentials: "include",
+    });
+  } catch (err: any) {
+    throw new Error("Network error (failed to delete habit): " + (err?.message || err));
+  }
   if (!res.ok) {
     let errString = "Failed to delete habit";
     try {
@@ -47,36 +62,49 @@ export async function deleteHabit(id: number): Promise<void> {
 
 // PUBLIC_INTERFACE
 export async function fetchHabitsWithLogs(): Promise<Habit[]> {
-  // Habits: GET /api/habits
-  // Each habit has id, name
-  // For each habit, fetch this week's log per day (ideally batch logs, e.g. GET /api/logs?habitId=X)
-  // Here: get /api/habits, then fetch logs per habit for the week
-
-  const habitsRes = await fetch(`${API_BASE}/api/habits`, { credentials: "include" });
-  if (!habitsRes.ok) throw new Error("Failed to fetch habits");
-
-  const habits = await habitsRes.json();
+  let habitsRes: Response, habits: any[];
+  try {
+    habitsRes = await fetch(`${API_BASE}/api/habits`, { credentials: "include" });  
+  } catch (err: any) {
+    throw new Error("Network error while fetching habits: " + (err?.message || err));
+  }
+  if (!habitsRes.ok) {
+    let errString = "Failed to fetch habits";
+    try {
+      const data = await habitsRes.json();
+      errString = data?.error || errString;
+    } catch {}
+    throw new Error(errString);
+  }
+  habits = await habitsRes.json();
 
   // For each habit, fetch logs for this week (Sun-Sat)
   const startOfWeek = getStartOfWeek(new Date());
   const endOfWeek = new Date(startOfWeek);
   endOfWeek.setDate(startOfWeek.getDate() + 6);
 
-  // We batch logs: GET /api/logs?from=YYYY-MM-DD&to=YYYY-MM-DD
-  const logsRes = await fetch(
-    `${API_BASE}/api/logs?from=${startOfWeek
-      .toISOString()
-      .slice(0, 10)}&to=${endOfWeek.toISOString().slice(0, 10)}`,
-    { credentials: "include" }
-  );
-  if (!logsRes.ok) throw new Error("Failed to fetch logs");
+  let logsRes: Response, logs: { id: number; habitId: number; day: string; done: boolean }[];
+  try {
+    // We batch logs: GET /api/logs?from=YYYY-MM-DD&to=YYYY-MM-DD
+    logsRes = await fetch(
+      `${API_BASE}/api/logs?from=${startOfWeek
+        .toISOString()
+        .slice(0, 10)}&to=${endOfWeek.toISOString().slice(0, 10)}`,
+      { credentials: "include" }
+    );
+  } catch (err: any) {
+    throw new Error("Network error while fetching logs: " + (err?.message || err));
+  }
+  if (!logsRes.ok) {
+    let errString = "Failed to fetch logs";
+    try {
+      const data = await logsRes.json();
+      errString = data?.error || errString;
+    } catch {}
+    throw new Error(errString);
+  }
 
-  const logs: {
-    id: number;
-    habitId: number;
-    day: string;
-    done: boolean;
-  }[] = await logsRes.json();
+  logs = await logsRes.json();
 
   // Return habits with their week daily status
   return habits.map((habit: { id: number; name: string }) => {
@@ -108,25 +136,57 @@ export async function markHabitCheckmark(
 ): Promise<void> {
   // POST or PATCH to /api/logs to set status for a day
   // First, try PATCH /api/logs (if log exists), else POST
-  const existingLogRes = await fetch(
-    `${API_BASE}/api/logs?habitId=${habitId}&day=${dateStr}`,
-    { credentials: "include" }
-  );
-  const logs = existingLogRes.ok ? await existingLogRes.json() : [];
+  let existingLogRes: Response, logs: any[] = [];
+  try {
+    existingLogRes = await fetch(
+      `${API_BASE}/api/logs?habitId=${habitId}&day=${dateStr}`,
+      { credentials: "include" }
+    );
+    logs = existingLogRes.ok ? await existingLogRes.json() : [];
+  } catch (err: any) {
+    throw new Error("Network error while checking mark: " + (err?.message || err));
+  }
+
   if (logs.length > 0) {
-    await fetch(`${API_BASE}/api/logs/${logs[0].id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify({ done: checked }),
-    });
+    let res: Response;
+    try {
+      res = await fetch(`${API_BASE}/api/logs/${logs[0].id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ done: checked }),
+      });
+    } catch (err: any) {
+      throw new Error("Network error (mark check): " + (err?.message || err));
+    }
+    if (!res.ok) {
+      let errString = "Failed to update habit checkmark";
+      try {
+        const data = await res.json();
+        errString = data?.error || errString;
+      } catch {}
+      throw new Error(errString);
+    }
   } else {
-    await fetch(`${API_BASE}/api/logs`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify({ habitId, day: dateStr, done: checked }),
-    });
+    let res: Response;
+    try {
+      res = await fetch(`${API_BASE}/api/logs`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ habitId, day: dateStr, done: checked }),
+      });
+    } catch (err: any) {
+      throw new Error("Network error (create log): " + (err?.message || err));
+    }
+    if (!res.ok) {
+      let errString = "Failed to check-off habit";
+      try {
+        const data = await res.json();
+        errString = data?.error || errString;
+      } catch {}
+      throw new Error(errString);
+    }
   }
 }
 
@@ -137,14 +197,24 @@ export async function markHabitCheckmark(
  * Returns: the created habit.
  */
 export async function createHabit(name: string): Promise<{ id: number; name: string }> {
-  const res = await fetch(`${API_BASE}/api/habits`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    credentials: "include",
-    body: JSON.stringify({ name }),
-  });
+  let res: Response;
+  try {
+    res = await fetch(`${API_BASE}/api/habits`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ name }),
+    });
+  } catch (err: any) {
+    throw new Error("Network error (create habit): " + (err?.message || err));
+  }
   if (!res.ok) {
-    throw new Error((await res.json())?.error || "Failed to create habit");
+    let reason = "Failed to create habit";
+    try {
+      const data = await res.json();
+      reason = data?.error || reason;
+    } catch {}
+    throw new Error(reason);
   }
   return res.json();
 }

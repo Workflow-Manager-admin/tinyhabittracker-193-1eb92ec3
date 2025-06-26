@@ -101,10 +101,10 @@ export default function RegisterPage() {
             {(submitting || loading) ? "Registering..." : "Register"}
           </button>
           <div className="flex justify-between text-xs mt-2">
-            {/* Use Next.js Link for client-side navigation to the Authority Login page */}
+            {/* Use Next.js Link for client-side navigation to the Login page */}
             <a
               className="text-primary hover:underline"
-              href="/login/authority"
+              href="/login"
             >
               Already have an account? Login here
             </a>
