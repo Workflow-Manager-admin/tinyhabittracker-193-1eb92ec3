@@ -1,11 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import React from "react";
-import { AuthProvider } from "./auth";
-import { NavBar } from "./NavBar";
+import { Providers } from "./Providers";
 
 /**
  * Base font setup (Geist, Geist_Mono—modern, minimal, clean).
@@ -30,18 +27,10 @@ export const metadata: Metadata = {
 
 /**
  * PUBLIC_INTERFACE
- * Create a singleton QueryClient outside the component,
- * avoids re-creating the query client per render.
- */
-const queryClient = new QueryClient();
-
-/**
- * PUBLIC_INTERFACE
- * Root layout for the app.
- * - Includes React Query Provider, AuthProvider, NavBar
- * - Loads Tailwind + custom global CSS
- * - Sets fonts, base color theme, and structure
- * - NavBar is always visible, content is children.
+ * Root layout for the app (Server Component).
+ * - Loads Tailwind + custom global CSS.
+ * - Sets fonts, base color theme, structure (html, body).
+ * - Delegates all client-logic/context to <Providers> (client component).
  */
 export default function RootLayout({
   children,
@@ -53,15 +42,9 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col bg-background font-sans`}
       >
-        <AuthProvider>
-          <QueryClientProvider client={queryClient}>
-            {/* NavBar is always at top */}
-            <NavBar />
-            <main className="flex-1 flex flex-col">{children}</main>
-            {/* React Query DevTools: visible in development */}
-            <ReactQueryDevtools initialIsOpen={false} />
-          </QueryClientProvider>
-        </AuthProvider>
+        <Providers>
+          {children}
+        </Providers>
       </body>
     </html>
   );
