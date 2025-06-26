@@ -3,6 +3,26 @@ import type { Habit, DailyStatus } from "./HabitList";
 // Adjust backend URL as needed depending on deployment/proxy. If Next.js API routes proxy, use "/api/..." instead.
 const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3000"; // fallback to 3000 for local nextjs, else set env
 
+/**
+ * PUBLIC_INTERFACE
+ * Edit a habit's name (PATCH /api/habits/:id).
+ * @param id: number
+ * @param name: string
+ * Returns: the updated habit object.
+ */
+export async function editHabitName(id: number, name: string): Promise<{ id: number; name: string }> {
+  const res = await fetch(`${API_BASE}/api/habits/${id}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify({ name }),
+  });
+  if (!res.ok) {
+    throw new Error((await res.json())?.error || "Failed to update habit name");
+  }
+  return res.json();
+}
+
 // PUBLIC_INTERFACE
 export async function fetchHabitsWithLogs(): Promise<Habit[]> {
   // Habits: GET /api/habits

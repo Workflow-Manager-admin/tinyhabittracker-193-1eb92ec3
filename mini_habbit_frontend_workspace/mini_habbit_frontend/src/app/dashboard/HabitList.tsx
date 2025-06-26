@@ -2,7 +2,7 @@
 
 import React from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { fetchHabitsWithLogs, markHabitCheckmark, createHabit } from "./api";
+import { fetchHabitsWithLogs, markHabitCheckmark, createHabit, editHabitName } from "./api";
 
 /**
  * PUBLIC_INTERFACE
@@ -34,6 +34,11 @@ export default function HabitList({ habits }: { habits?: Habit[] }) {
   const [showNewForm, setShowNewForm] = React.useState(false);
   const [newHabitName, setNewHabitName] = React.useState("");
   const [formError, setFormError] = React.useState<string | null>(null);
+
+  // --- Edit habit state ---
+  const [editingHabitId, setEditingHabitId] = React.useState<number | null>(null);
+  const [editInputValue, setEditInputValue] = React.useState("");
+  const editInputRef = React.useRef<HTMLInputElement>(null);
 
   // React Query: fetching habits
   const {
@@ -81,6 +86,35 @@ export default function HabitList({ habits }: { habits?: Habit[] }) {
       return { previous };
     },
     onError: (_err, _variables, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(["habits-with-logs"], context.previous);
+      }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["habits-with-logs"] });
+    },
+  });
+
+  // --- Edit Habit Name mutation (optimistic) ---
+  const editMutation = useMutation({
+    mutationFn: async ({ id, name }: { id: number; name: string }) => editHabitName(id, name),
+    onMutate: async ({ id, name }) => {
+      await queryClient.cancelQueries({ queryKey: ["habits-with-logs"] });
+      const previous = queryClient.getQueryData<Habit[]>(["habits-with-logs"]);
+      if (previous) {
+        queryClient.setQueryData<Habit[]>(["habits-with-logs"], (old) =>
+          old
+            ? old.map((habit) =>
+                habit.id === id
+                  ? { ...habit, name }
+                  : habit
+              )
+            : old
+        );
+      }
+      return { previous };
+    },
+    onError: (_err, _vars, context) => {
       if (context?.previous) {
         queryClient.setQueryData(["habits-with-logs"], context.previous);
       }
@@ -215,7 +249,87 @@ export default function HabitList({ habits }: { habits?: Habit[] }) {
           className="flex flex-col sm:flex-row sm:items-center justify-between bg-white dark:bg-zinc-800 rounded-xl shadow border border-gray-200 dark:border-zinc-700 px-4 py-4 transition"
         >
           <div className="flex-1 min-w-0 flex items-center gap-3 mb-4 sm:mb-0">
-            <span className="text-base font-semibold truncate text-gray-900 dark:text-zinc-100">{habit.name}</span>
+            {editingHabitId === habit.id ? (
+              <form
+                className="flex gap-2 items-center w-full"
+                onSubmit={async (e) => {
+                  e.preventDefault();
+                  const trimmed = editInputValue.trim();
+                  if (trimmed && trimmed !== habit.name) {
+                    editMutation.mutate({ id: habit.id, name: trimmed });
+                  }
+                  setEditingHabitId(null);
+                  setEditInputValue("");
+                }}
+              >
+                <input
+                  ref={editInputRef}
+                  className="rounded border border-gray-300 dark:border-zinc-700 p-2 bg-white dark:bg-zinc-900 text-gray-900 dark:text-gray-200 focus:border-primary focus:outline-none transition min-w-0 flex-1"
+                  placeholder="Edit habit name..."
+                  value={editInputValue}
+                  onChange={e => setEditInputValue(e.target.value)}
+                  onBlur={() => {
+                    setEditingHabitId(null);
+                    setEditInputValue("");
+                  }}
+                  onKeyDown={e => {
+                    if (e.key === "Escape") {
+                      setEditingHabitId(null);
+                      setEditInputValue("");
+                    }
+                  }}
+                  maxLength={40}
+                  disabled={editMutation.isPending}
+                  autoFocus
+                />
+                <button
+                  type="submit"
+                  className="bg-primary hover:bg-blue-700 text-white rounded px-3 py-2 ml-1 font-semibold transition disabled:opacity-70"
+                  disabled={
+                    editMutation.isPending ||
+                    !editInputValue.trim() ||
+                    editInputValue.trim() === habit.name
+                  }
+                  title="Save"
+                >
+                  Save
+                </button>
+                <button
+                  type="button"
+                  className="ml-1 px-2 py-2 rounded text-xs text-gray-700 dark:text-zinc-300 bg-gray-100 dark:bg-zinc-700 hover:bg-gray-200 dark:hover:bg-zinc-600 transition"
+                  onClick={() => {
+                    setEditingHabitId(null);
+                    setEditInputValue("");
+                  }}
+                  disabled={editMutation.isPending}
+                  title="Cancel"
+                >
+                  Cancel
+                </button>
+              </form>
+            ) : (
+              <>
+                <span className="text-base font-semibold truncate text-gray-900 dark:text-zinc-100">
+                  {habit.name}
+                </span>
+                <button
+                  type="button"
+                  className="ml-2 px-2 py-1 rounded text-xs text-gray-700 dark:text-zinc-200 bg-gray-100 dark:bg-zinc-700 hover:bg-gray-200 dark:hover:bg-zinc-600 transition"
+                  onClick={() => {
+                    setEditingHabitId(habit.id);
+                    setEditInputValue(habit.name);
+                    // focus handled by autoFocus, but ref is for future/UX if needed
+                    setTimeout(() => {
+                      editInputRef.current?.focus();
+                    }, 0);
+                  }}
+                  disabled={editMutation.isPending}
+                  title="Edit habit name"
+                >
+                  Edit
+                </button>
+              </>
+            )}
           </div>
           <div className="flex items-center gap-3 overflow-x-auto">
             {habit.week.map((day, idx) => (
@@ -224,7 +338,9 @@ export default function HabitList({ habits }: { habits?: Habit[] }) {
                 className="flex flex-col items-center mx-1 w-10"
                 title={day.date}
               >
-                <span className="text-xs mb-1 text-gray-500 dark:text-zinc-400">{weekdays[idx]}</span>
+                <span className="text-xs mb-1 text-gray-500 dark:text-zinc-400">
+                  {weekdays[idx]}
+                </span>
                 <input
                   type="checkbox"
                   checked={day.done}
