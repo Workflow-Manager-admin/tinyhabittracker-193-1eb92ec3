@@ -2,13 +2,21 @@
 
 import React from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { fetchHabitsWithLogs, markHabitCheckmark, createHabit, editHabitName, deleteHabit } from "./api";
+import {
+  fetchHabitsWithLogs,
+  markHabitCheckmark,
+  createHabit,
+  editHabitName,
+  deleteHabit,
+} from "./api";
 
 /**
  * PUBLIC_INTERFACE
  * HabitList Component
  * Displays a list of habits and, for each habit, renders daily checkboxes for a week (Sun-Sat) to mark completion.
- * Fetches real data using React Query. Optimistic UI updates when checking off a day.
+ * Handles create, update, and delete operations for habits.
+ * Uses React Query for state and optimistic updates.
+ * Requires authentication (run under an auth-guarded page).
  * Styled with Tailwind CSS.
  */
 
