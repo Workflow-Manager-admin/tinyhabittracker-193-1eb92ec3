@@ -41,6 +41,7 @@ class AuthController {
       authService.setTokenCookie(res, result.token);
       return res.status(201).json({ user: { email: result.user.email } });
     } catch (e) {
+      // Do not leak detailed error in response
       return res.status(500).json({ error: 'Registration error.' });
     }
   }

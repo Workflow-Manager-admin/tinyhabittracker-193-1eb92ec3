@@ -13,6 +13,13 @@ const swaggerSpec = require('../swagger');
  */
 const app = express();
 
+/**
+ * CORS configuration (critical for cookie-based auth in browser):
+ * - Only FRONTEND_ORIGIN (from .env) and localhost are allowed for cross-origin requests.
+ * - credentials: true allows browser to send/receive cookies.
+ * - exposedHeaders: ['Set-Cookie'] ensures client receives cookie set info.
+ * - For production security: only enable the exact frontend origin.
+ */
 const allowedOrigins = [
   process.env.FRONTEND_ORIGIN || 'http://localhost:3000',
   'http://localhost:3000'
@@ -31,7 +38,7 @@ app.use(cors({
   credentials: true, // allow cookies (HTTP-only)
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
-  exposedHeaders: ['Set-Cookie']
+  exposedHeaders: ['Set-Cookie'] // Allow browsers to see Set-Cookie header for auth cookies
 }));
 
 /**

@@ -2,13 +2,16 @@
  * Dashboard Page
  * Route: /dashboard
  * PUBLIC_INTERFACE
- * Secured Dashboard page (SSR + client auth)
+ * Secured Dashboard page (SSR + client auth, cookies only)
  *
- * - Server-Side Rendering: Checks authentication on the server using session cookies.
- *   Redirects to /login if not authenticated.
- * - Client-side: Uses <AuthGuard> to handle session-loss during client navigation,
- *   preventing unauthorized access or content flash after logout/expired session.
- * - Only renders for logged-in users. Unauthenticated users will always be redirected to /login.
+ * - SSR: Checks authentication using session token cookie ONLY (no local/session storage fallback!).
+ *   - Fully robust to page reloads/refreshes/browser restarts if the HttpOnly cookie remains valid.
+ *   - If not authenticated, immediate server-side redirect to /login (prevents UI flash/leaks).
+ * - Client: Uses <AuthGuard> to manage session-drop on SPA navigation (logout, expiration).
+ * - All user state is kept in-memory (React) but always validated against backend cookies.
+ * - No JWT/token is ever made accessible to JavaScript, session restored purely from cookie.
+ * - All authenticated flows use `credentials: "include"` and are robust to CORS and session cookie settings.
+ * - Unauthenticated users will always be redirected to /login by both SSR and SPA.
  */
 
 import HabitList from "./HabitList";

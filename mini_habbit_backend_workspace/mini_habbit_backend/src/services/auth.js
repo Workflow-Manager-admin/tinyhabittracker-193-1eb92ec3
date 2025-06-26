@@ -47,7 +47,17 @@ class AuthService {
     return jwt.sign(payload, JWT_SECRET, { expiresIn: TOKEN_EXPIRES });
   }
 
-  // Set token cookie (HttpOnly, Secure in production)
+  /**
+   * Set JWT token cookie securely.
+   * Cookie settings:
+   *  - httpOnly: prevents JS access on client, mitigates XSS
+   *  - secure: cookie sent only over HTTPS (enabled in production)
+   *  - sameSite: 'lax' prevents most CSRF, allowing only top-level nav POSTs (not AJAX from 3rd-party)
+   *  - path: '/' (covers all API endpoints)
+   *  - maxAge: session lasts for TOKEN_EXPIRES
+   * Note: Must be paired with CORS setting credentials:true and explicit allowed origin.
+   * Calling this will overwrite any existing session token.
+   */
   // PUBLIC_INTERFACE
   setTokenCookie(res, token) {
     res.cookie(TOKEN_COOKIE, token, {
@@ -59,6 +69,11 @@ class AuthService {
     });
   }
 
+  /**
+   * Clear the JWT token cookie (logout).
+   * This method ensures all flags match those set, so browser cookie is discarded properly.
+   * Always set httpOnly, sameSite, secure, path.
+   */
   // PUBLIC_INTERFACE
   clearTokenCookie(res) {
     res.clearCookie(TOKEN_COOKIE, {
