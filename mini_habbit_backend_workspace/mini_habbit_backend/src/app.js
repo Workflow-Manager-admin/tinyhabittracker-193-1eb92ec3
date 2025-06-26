@@ -40,12 +40,16 @@ app.use(cookieParser());
 const authRoutes = require('./routes/auth');
 app.use('/auth', authRoutes);
 
-// API route-protection: all /api endpoints require authentication
 const { authMiddleware } = require('./middleware/auth');
 
-// You must add code like: app.use('/api', authMiddleware);
-// This will be invoked before any /api/* route handlers (habits, logs, etc)
+const habitsRoutes = require('./routes/habits');
+const logsRoutes = require('./routes/logs');
+
 app.use('/api', authMiddleware);
+
+// Mount protected /api/habits and /api/logs for all logged-in users
+app.use('/api/habits', habitsRoutes);
+app.use('/api/logs', logsRoutes);
 
 // Mount legacy/health check and other routes (these are public)
 app.use('/', routes);
