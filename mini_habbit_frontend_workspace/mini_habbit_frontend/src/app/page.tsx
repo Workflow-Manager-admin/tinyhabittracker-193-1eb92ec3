@@ -33,21 +33,24 @@ export default function HomePage() {
 
   // Show minimalist landing (only if not logged in)
   return (
-    <main className="flex flex-col items-center justify-center min-h-screen px-3 bg-background dark:bg-dark-bg">
-      <div className="w-full max-w-md rounded-lg border border-muted dark:border-dark-muted shadow-lg p-8 flex flex-col items-center gap-4 bg-surface dark:bg-dark-surface">
+    <main className="flex flex-col items-center justify-center min-h-screen px-3 bg-white dark:bg-dark-bg">
+      <div className="w-full max-w-md rounded-lg border border-muted dark:border-dark-muted shadow-lg p-8 flex flex-col items-center gap-4 bg-white dark:bg-dark-surface">
         <span
-          className="text-contrastGray dark:text-white text-4xl font-extrabold tracking-tight mb-2"
+          className="text-4xl font-extrabold tracking-tight mb-2"
           style={{ color: "var(--contrast-gray, #374151)" }}
         >
           TinyHabitTracker
         </span>
-        <span className="text-contrastGray dark:text-zinc-200 text-center text-lg mb-4" style={{ color: "var(--contrast-gray, #374151)" }}>
+        <span
+          className="text-center text-lg mb-4"
+          style={{ color: "var(--contrast-gray, #374151)" }}
+        >
           Build great habits, one tiny step at a time. <br />
           Simple. Private. Effective.
         </span>
         <a
           href="/register"
-          className="mt-4 px-6 py-2 rounded font-semibold text-contrastGray text-lg bg-sunshine hover:bg-primary hover:text-white transition shadow focus:outline-none focus:ring-2 focus:ring-primary"
+          className="mt-4 px-6 py-2 rounded font-semibold text-lg transition shadow focus:outline-none focus:ring-2 focus:ring-primary"
           style={{
             backgroundColor: "var(--sunshine, #facc15)",
             color: "var(--contrast-gray, #374151)",
@@ -57,12 +60,20 @@ export default function HomePage() {
         </a>
         <a
           href="/login"
-          className="text-primary text-sm mt-2 hover:text-sunshine hover:underline transition"
+          className="text-sm mt-2 hover:text-primary hover:underline transition"
+          style={{
+            color: "#2563eb",
+          }}
         >
           Already have an account? Sign In
         </a>
       </div>
-      <footer className="mt-8 text-xs text-muted dark:text-dark-muted text-center">
+      <footer
+        className="mt-8 text-xs text-muted dark:text-dark-muted text-center"
+        style={{
+          color: "var(--contrast-gray, #64748b)",
+        }}
+      >
         © {new Date().getFullYear()} TinyHabitTracker. All rights reserved.
       </footer>
     </main>
