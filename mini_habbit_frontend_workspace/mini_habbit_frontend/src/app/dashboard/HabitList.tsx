@@ -207,11 +207,11 @@ export default function HabitList({ habits }: { habits?: Habit[] }) {
 
   // --- UI (with new habit form) ---
   return (
-    <div className="flex flex-col gap-6 w-full">
+    <div className="flex flex-col gap-6 w-full max-w-full">
       {/* --- New Habit Form section --- */}
       {showNewForm ? (
         <form
-          className="flex gap-2 mb-2 items-center"
+          className="flex flex-col xs:flex-row gap-2 mb-2 items-center w-full"
           onSubmit={async (e) => {
             e.preventDefault();
             if (!newHabitName.trim()) {
@@ -275,9 +275,9 @@ export default function HabitList({ habits }: { habits?: Habit[] }) {
       {habitsToRender.map((habit) => (
         <div
           key={habit.id}
-          className="flex flex-col sm:flex-row sm:items-center justify-between bg-white dark:bg-zinc-800 rounded-xl shadow border border-gray-200 dark:border-zinc-700 px-4 py-4 transition"
+          className="flex flex-col sm:flex-row sm:items-center justify-between bg-white dark:bg-zinc-800 rounded-xl shadow border border-gray-200 dark:border-zinc-700 px-2 sm:px-4 py-3 sm:py-4 transition w-full max-w-full"
         >
-          <div className="flex-1 min-w-0 flex items-center gap-3 mb-4 sm:mb-0">
+          <div className="flex-1 min-w-0 flex items-center gap-2 sm:gap-3 mb-2 sm:mb-0">
             {editingHabitId === habit.id ? (
               <form
                 className="flex gap-2 items-center w-full"
@@ -373,17 +373,17 @@ export default function HabitList({ habits }: { habits?: Habit[] }) {
               </>
             )}
           </div>
-          <div className="flex items-center gap-3 overflow-x-auto">
+          <div className="flex items-center gap-2 sm:gap-3 overflow-x-auto w-full pb-2 sm:pb-0">
             {habit.week.map((day, idx) => {
               // Show explicit status badge (✅/❌) next to checkbox for clarity.
               // Click on badge toggles done, checkbox is still available and accessible.
               return (
                 <div
                   key={day.date}
-                  className="flex flex-col items-center mx-1 w-10"
+                  className="flex flex-col items-center mx-0 sm:mx-1 w-10 min-w-[2.5rem] max-w-[2.7rem]"
                   title={day.date}
                 >
-                  <span className="text-xs mb-1 text-gray-500 dark:text-zinc-400">
+                  <span className="text-[11px] sm:text-xs mb-1 text-gray-500 dark:text-zinc-400">
                     {weekdays[idx]}
                   </span>
                   <button
@@ -393,7 +393,7 @@ export default function HabitList({ habits }: { habits?: Habit[] }) {
                         ? `Mark ${weekdays[idx]} (${day.date}) undone`
                         : `Mark ${weekdays[idx]} (${day.date}) done`
                     }
-                    className={`transition rounded-full text-2xl leading-none w-8 h-8 shadow-sm ${
+                    className={`transition rounded-full text-xl sm:text-2xl leading-none w-8 h-8 shadow-sm ${
                       day.done
                         ? "bg-green-100 text-green-600 border border-green-200 dark:bg-green-900 dark:border-green-900"
                         : "bg-gray-100 text-gray-400 border border-gray-200 dark:bg-zinc-700 dark:border-zinc-900"

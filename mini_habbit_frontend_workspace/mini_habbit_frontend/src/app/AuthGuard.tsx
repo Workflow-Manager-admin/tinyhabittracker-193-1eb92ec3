@@ -23,7 +23,7 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
   // Wait until loading complete before rendering children
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex items-center justify-center min-h-screen px-2">
         <span className="text-gray-500 dark:text-zinc-400">Checking authentication…</span>
       </div>
     );

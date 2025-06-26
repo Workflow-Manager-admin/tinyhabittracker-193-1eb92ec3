@@ -54,7 +54,7 @@ export default async function DashboardPage() {
   // The AuthGuard protects against session changes or logout in client navigation
   return (
     <AuthGuard>
-      <div className="min-h-screen flex h-screen bg-gray-50 dark:bg-zinc-900">
+      <div className="min-h-screen flex flex-col md:flex-row h-screen bg-gray-50 dark:bg-zinc-900">
         {/* Sidebar (desktop) */}
         <aside className="hidden md:flex flex-col w-56 bg-white dark:bg-zinc-800 border-r border-gray-200 dark:border-zinc-700 py-6 px-4 gap-6 h-full">
           <span className="text-lg font-bold text-primary mb-2 tracking-tight">
@@ -99,13 +99,13 @@ export default async function DashboardPage() {
           <div className="flex gap-2">
             <a
               href="/dashboard"
-              className="rounded px-2 py-1 bg-primary text-white text-sm"
+              className="rounded px-2 py-1 bg-primary text-white text-xs sm:text-sm"
             >
               Dashboard
             </a>
             <a
               href="/profile"
-              className="rounded px-2 py-1 hover:bg-gray-100 dark:hover:bg-zinc-700 text-sm"
+              className="rounded px-2 py-1 hover:bg-gray-100 dark:hover:bg-zinc-700 text-xs sm:text-sm"
             >
               Profile
             </a>
@@ -115,7 +115,7 @@ export default async function DashboardPage() {
             >
               <button
                 type="submit"
-                className="rounded px-2 py-1 hover:bg-gray-100 dark:hover:bg-zinc-700 text-sm"
+                className="rounded px-2 py-1 hover:bg-gray-100 dark:hover:bg-zinc-700 text-xs sm:text-sm"
               >
                 Logout
               </button>
@@ -124,11 +124,11 @@ export default async function DashboardPage() {
         </nav>
 
         {/* Main Content */}
-        <main className="flex-1 flex flex-col items-center px-4 py-20 md:py-10 md:px-12 overflow-auto">
-          <h1 className="text-2xl font-bold mb-8 text-primary">
+        <main className="flex-1 flex flex-col items-center px-2 pt-16 pb-4 md:pt-10 md:px-8 lg:px-12 md:pb-0 overflow-auto w-full">
+          <h1 className="text-lg sm:text-xl md:text-2xl font-bold mb-6 md:mb-8 text-primary w-full text-center md:text-left">
             My Habits
           </h1>
-          <section className="w-full max-w-2xl">
+          <section className="w-full max-w-full sm:max-w-2xl mx-auto">
             <HabitList />
           </section>
         </main>
