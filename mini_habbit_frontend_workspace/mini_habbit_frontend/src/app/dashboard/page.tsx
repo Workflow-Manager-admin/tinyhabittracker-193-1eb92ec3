@@ -1,42 +1,53 @@
-"use client";
-
-import React from "react";
-import HabitList from "./HabitList";
-import { useAuth } from "../auth";
-import { useRouter } from "next/navigation";
-
 /**
  * Dashboard Page
  * Route: /dashboard
  * PUBLIC_INTERFACE
  * Displays a sidebar/navbar and main content listing user habits.
  * Protected: Only available to authenticated users.
+ * Uses SSR to check authentication; redirects unauthenticated users to /login.
  */
 
-export default function DashboardPage() {
-  const { user, logout, loading } = useAuth();
-  const router = useRouter();
+import HabitList from "./HabitList";
 
-  React.useEffect(() => {
-    // If not logged in, redirect to login
-    if (!loading && !user) {
-      router.replace("/login");
-    }
-  }, [user, loading, router]);
+// Server components and utility imports for SSR auth check
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-zinc-900">
-        <span className="text-gray-700 dark:text-zinc-200 text-lg">Loading...</span>
-      </div>
-    );
-  }
-
-  if (!user) {
-    // Don't render anything (redirect happens)
+/**
+ * Gets user session info via backend cookie check.
+ * Returns user object if authenticated, else null.
+ * You may update fetch URL for production/deployment as needed.
+ */
+async function getServerSession(): Promise<{ email: string } | null> {
+  // You may want to move backend URL to global config/env for production
+  const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:3000";
+  try {
+    const res = await fetch(`${API_BASE}/auth/me`, {
+      headers: {
+        cookie: cookies().toString(),
+      },
+      // Ensure cookies sent for auth
+      credentials: "include" as any,
+      cache: "no-store",
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data.user;
+  } catch {
     return null;
   }
+}
 
+// PUBLIC_INTERFACE
+export default async function DashboardPage() {
+  const user = await getServerSession();
+
+  if (!user) {
+    // Not authenticated — on server, redirect instantly (before rendering)
+    redirect("/login");
+  }
+
+  // If authenticated, render protected dashboard
   return (
     <div className="min-h-screen flex h-screen bg-gray-50 dark:bg-zinc-900">
       {/* Sidebar */}
@@ -58,13 +69,14 @@ export default function DashboardPage() {
           >
             Profile
           </a>
-          <button
-            type="button"
-            onClick={() => logout().then(() => router.replace("/login"))}
-            className="rounded px-3 py-2 hover:bg-gray-100 dark:hover:bg-zinc-700 transition text-left"
-          >
-            Logout
-          </button>
+          <form action="/logout" method="POST">
+            <button
+              type="submit"
+              className="rounded px-3 py-2 hover:bg-gray-100 dark:hover:bg-zinc-700 transition text-left"
+            >
+              Logout
+            </button>
+          </form>
         </nav>
         <div className="mt-auto text-xs text-gray-500 dark:text-zinc-500">
           © {new Date().getFullYear()} TinyHabitTracker
@@ -89,13 +101,14 @@ export default function DashboardPage() {
           >
             Profile
           </a>
-          <button
-            type="button"
-            onClick={() => logout().then(() => router.replace("/login"))}
-            className="rounded px-2 py-1 hover:bg-gray-100 dark:hover:bg-zinc-700 text-sm"
-          >
-            Logout
-          </button>
+          <form action="/logout" method="POST">
+            <button
+              type="submit"
+              className="rounded px-2 py-1 hover:bg-gray-100 dark:hover:bg-zinc-700 text-sm"
+            >
+              Logout
+            </button>
+          </form>
         </div>
       </nav>
 
