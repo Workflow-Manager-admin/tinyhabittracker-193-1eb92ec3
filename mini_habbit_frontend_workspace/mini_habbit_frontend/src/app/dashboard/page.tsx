@@ -2,16 +2,41 @@
 
 import React from "react";
 import HabitList from "./HabitList";
+import { useAuth } from "../auth";
+import { useRouter } from "next/navigation";
 
 /**
  * Dashboard Page
  * Route: /dashboard
  * PUBLIC_INTERFACE
  * Displays a sidebar/navbar and main content listing user habits.
- * Uses sample/mock data for now; later will use fetched user habits.
+ * Protected: Only available to authenticated users.
  */
 
 export default function DashboardPage() {
+  const { user, logout, loading } = useAuth();
+  const router = useRouter();
+
+  React.useEffect(() => {
+    // If not logged in, redirect to login
+    if (!loading && !user) {
+      router.replace("/login");
+    }
+  }, [user, loading, router]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-zinc-900">
+        <span className="text-gray-700 dark:text-zinc-200 text-lg">Loading...</span>
+      </div>
+    );
+  }
+
+  if (!user) {
+    // Don't render anything (redirect happens)
+    return null;
+  }
+
   return (
     <div className="min-h-screen flex h-screen bg-gray-50 dark:bg-zinc-900">
       {/* Sidebar */}
@@ -19,6 +44,7 @@ export default function DashboardPage() {
         <span className="text-lg font-bold text-primary mb-2 tracking-tight">
           TinyHabitTracker
         </span>
+        <div className="text-xs mb-4 text-gray-500 dark:text-zinc-400 break-all">{user.email}</div>
         <nav className="flex flex-col gap-2 font-medium text-gray-700 dark:text-zinc-200">
           <a
             href="/dashboard"
@@ -32,12 +58,13 @@ export default function DashboardPage() {
           >
             Profile
           </a>
-          <a
-            href="/login"
-            className="rounded px-3 py-2 hover:bg-gray-100 dark:hover:bg-zinc-700 transition"
+          <button
+            type="button"
+            onClick={() => logout().then(() => router.replace("/login"))}
+            className="rounded px-3 py-2 hover:bg-gray-100 dark:hover:bg-zinc-700 transition text-left"
           >
             Logout
-          </a>
+          </button>
         </nav>
         <div className="mt-auto text-xs text-gray-500 dark:text-zinc-500">
           © {new Date().getFullYear()} TinyHabitTracker
@@ -62,6 +89,13 @@ export default function DashboardPage() {
           >
             Profile
           </a>
+          <button
+            type="button"
+            onClick={() => logout().then(() => router.replace("/login"))}
+            className="rounded px-2 py-1 hover:bg-gray-100 dark:hover:bg-zinc-700 text-sm"
+          >
+            Logout
+          </button>
         </div>
       </nav>
 

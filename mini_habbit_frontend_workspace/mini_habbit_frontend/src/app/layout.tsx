@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import React from "react";
 import { AuthProvider } from "./auth";
+import { NavBar } from "./NavBar";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -36,6 +37,7 @@ export default function RootLayout({
       >
         <AuthProvider>
           <QueryClientProvider client={queryClient}>
+            <NavBar />
             {children}
             {/* React Query DevTools (visible during development) */}
             <ReactQueryDevtools initialIsOpen={false} />
