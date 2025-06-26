@@ -7,9 +7,8 @@ import { useAuth } from "./auth";
 /**
  * PUBLIC_INTERFACE
  * Home Page ("/").
- * - Minimalist: No Next.js or Vercel starter content.
- * - Authenticated users are redirected to /dashboard.
- * - Unauthenticated users see a simple welcome/cta for TinyHabitTracker.
+ * - Strict minimalist: Only shows Login and Sign Up options as CTA buttons. Removes all text, description, logo, or graphics.
+ * - Brand palette and modern accessibility.
  */
 export default function HomePage() {
   const { user, loading } = useAuth();
@@ -26,57 +25,50 @@ export default function HomePage() {
   if (loading) {
     return (
       <main className="flex flex-col items-center justify-center min-h-screen px-2">
-        <span className="text-gray-500 dark:text-zinc-400 text-lg">Loading…</span>
+        <span className="text-gray-500 dark:text-zinc-400 text-lg" aria-live="polite">Loading…</span>
       </main>
     );
   }
 
-  // Show minimalist landing (only if not logged in)
+  // Only show Login and Sign Up options for unauthenticated users
   return (
     <main className="flex flex-col items-center justify-center min-h-screen px-3 bg-background dark:bg-dark-bg">
-      <div className="w-full max-w-md rounded-lg border border-muted dark:border-dark-muted shadow-lg p-8 flex flex-col items-center gap-4 bg-background dark:bg-dark-surface">
-        <span
-          className="text-4xl font-extrabold tracking-tight mb-2"
-          style={{ color: "var(--contrast-gray, #374151)" }}
+      <div
+        className="w-full max-w-xs flex flex-col gap-5 items-center rounded-xl shadow-md border border-muted dark:border-dark-muted p-8 bg-white dark:bg-dark-surface"
+        style={{
+          background: "var(--background, #fff)",
+          borderColor: "var(--muted, #e5e7eb)"
+        }}
+      >
+        <a
+          href="/login"
+          className="block w-full text-center rounded-lg text-lg font-bold px-6 py-3 mb-1 bg-primary text-white shadow focus:outline-none focus:ring-4 focus:ring-primary/30 hover:bg-primary/90 transition"
+          style={{
+            backgroundColor: "var(--primary, #2563eb)",
+            color: "#fff",
+            border: "2px solid var(--primary, #2563eb)",
+            letterSpacing: 0.02
+          }}
+          role="button"
+          tabIndex={0}
         >
-          TinyHabitTracker
-        </span>
-        <span
-          className="text-center text-lg mb-4"
-          style={{ color: "var(--contrast-gray, #374151)" }}
-        >
-          Build great habits, one tiny step at a time. <br />
-          Simple. Private. Effective.
-        </span>
+          Login
+        </a>
         <a
           href="/register"
-          className="mt-4 px-6 py-2 rounded font-semibold text-lg transition shadow focus:outline-none focus:ring-2 focus:ring-sunshine"
+          className="block w-full text-center rounded-lg text-lg font-bold px-6 py-3 bg-sunshine text-contrastGray shadow focus:outline-none focus:ring-4 focus:ring-sunshine/30 hover:bg-sunshine/90 hover:text-primary transition"
           style={{
             backgroundColor: "var(--sunshine, #facc15)",
             color: "var(--contrast-gray, #374151)",
+            border: "2px solid var(--sunshine, #facc15)",
+            letterSpacing: 0.02
           }}
+          role="button"
+          tabIndex={0}
         >
-          Get Started — Sign Up
-        </a>
-        <a
-          href="/login"
-          className="text-sm mt-2 hover:text-primary hover:underline transition"
-          style={{
-            color: "var(--contrast-gray, #374151)",
-            opacity: 0.9,
-          }}
-        >
-          Already have an account? Sign In
+          Sign Up
         </a>
       </div>
-      <footer
-        className="mt-8 text-xs text-muted dark:text-dark-muted text-center"
-        style={{
-          color: "var(--contrast-gray, #64748b)",
-        }}
-      >
-        © {new Date().getFullYear()} TinyHabitTracker. All rights reserved.
-      </footer>
     </main>
   );
 }
