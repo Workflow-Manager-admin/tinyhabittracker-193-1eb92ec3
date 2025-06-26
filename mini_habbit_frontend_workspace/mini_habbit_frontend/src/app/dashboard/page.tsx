@@ -81,7 +81,15 @@ export default async function DashboardPage() {
                 >
                   Profile
                 </a>
-                <form action="/logout" method="POST">
+                <form
+                  onSubmit={async (e) => {
+                    e.preventDefault();
+                    await fetch("/logout", { method: "POST" });
+                    // Invalidate client auth state and redirect to login
+                    if (typeof window !== "undefined") window.location.href = "/login";
+                  }}
+                  method="POST"
+                >
                   <button
                     type="submit"
                     className="rounded px-3 py-2 hover:bg-gray-100 dark:hover:bg-zinc-700 transition text-left"
@@ -113,7 +121,14 @@ export default async function DashboardPage() {
                 >
                   Profile
                 </a>
-                <form action="/logout" method="POST">
+                <form
+                  onSubmit={async (e) => {
+                    e.preventDefault();
+                    await fetch("/logout", { method: "POST" });
+                    if (typeof window !== "undefined") window.location.href = "/login";
+                  }}
+                  method="POST"
+                >
                   <button
                     type="submit"
                     className="rounded px-2 py-1 hover:bg-gray-100 dark:hover:bg-zinc-700 text-sm"
