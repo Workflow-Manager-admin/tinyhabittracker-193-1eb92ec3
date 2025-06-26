@@ -19,18 +19,11 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
-// Swagger docs
-app.use('/docs', swaggerUi.serve, (req, res, next) => {
-  const dynamicSpec = {
-    ...swaggerSpec,
-    servers: [
-      {
-        url: `${req.protocol}://${req.get('host')}`,
-      },
-    ],
-  };
-  swaggerUi.setup(dynamicSpec)(req, res, next);
-});
+/**
+ * Serve Swagger API documentation at /docs using Swagger UI Express.
+ * This provides an interactive UI for exploring API endpoints.
+ */
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Body/JSON/cookie parsing
 app.use(express.json());
