@@ -6,9 +6,9 @@ import { useAuth } from "./auth";
 
 /**
  * PUBLIC_INTERFACE
- * Landing Home Page ("/").
- * Presents hero with value prop, CTA, visual preview mockup, features/benefits, (optional testimonial),
- * and branded footer. Uses Tailwind and project brand colors, modern/minimal layout.
+ * HomePage – Brand landing page for TinyHabitTracker.
+ * Features: hero, primary CTA, preview, features list, testimonial, and footer.
+ * Modern, accessible, minimal layout; removes unrelated/excess elements.
  */
 export default function HomePage() {
   const { user, loading } = useAuth();
@@ -27,10 +27,16 @@ export default function HomePage() {
       {/* HERO SECTION */}
       <section className="w-full flex flex-col items-center justify-center flex-1 pt-16 pb-10 px-4 bg-gradient-to-b from-white via-amber-50 to-background dark:from-zinc-900 dark:via-dark-surface dark:to-dark-bg">
         <div className="max-w-2xl mx-auto text-center">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight mb-4" style={{ color: "var(--contrast-gray,#374151)" }}>
+          <h1
+            className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight mb-4"
+            style={{ color: "var(--contrast-gray,#374151)" }}
+          >
             TinyHabitTracker
           </h1>
-          <p className="mb-6 text-lg md:text-xl font-medium text-secondary" style={{ color: "var(--secondary,#64748b)" }}>
+          <p
+            className="mb-6 text-lg md:text-xl font-medium text-secondary"
+            style={{ color: "var(--secondary,#64748b)" }}
+          >
             Build better habits, one tiny check at a time. Stay accountable and see your progress, every single day.
           </p>
           <a
@@ -59,19 +65,18 @@ export default function HomePage() {
             }}
             aria-label="App Preview"
           >
-            {/* Placeholder illustration: grid, checkmarks, and brand accent */}
+            {/* Placeholder SVG mockup */}
             <svg width="200" height="85" viewBox="0 0 220 85" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-[80%] h-[80%] opacity-95">
               <rect x="10" y="10" width="200" height="65" rx="10" fill="#fffde7" stroke="#fde68a" strokeWidth="2"/>
               <rect x="24" y="22" width="162" height="8" rx="2.5" fill="#facc15" opacity="0.41"/>
               <rect x="24" y="41" width="48" height="8" rx="2.5" fill="#2563eb" opacity="0.22"/>
               <rect x="24" y="59" width="102" height="8" rx="2.5" fill="#22d3ee" opacity="0.16"/>
-              {/* 3 "habit rows" checkboxes */}
+              {/* "habit rows" checkboxes */}
               <circle cx="32" cy="26" r="5" fill="#fff" stroke="#fde68a" strokeWidth="2"/>
               <circle cx="32" cy="45" r="5" fill="#fff" stroke="#fde68a" strokeWidth="2"/>
               <circle cx="32" cy="63" r="5" fill="#fff" stroke="#fde68a" strokeWidth="2"/>
               {/* checkmarks */}
               <polyline points="29,26 31.5,28.5 35,23" fill="none" stroke="#16a34a" strokeWidth="2" strokeLinecap="round"/>
-              {/* Rest habit rows, partial completion */}
               <polyline points="29,45 31,47 35,43" fill="none" stroke="#22d3ee" strokeWidth="2" strokeLinecap="round" opacity="0.65"/>
             </svg>
             <span className="absolute bottom-1 right-3 text-xs text-gray-400 select-none">Preview</span>
@@ -129,7 +134,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Optional TESTIMONIAL SECTION */}
+      {/* TESTIMONIAL SECTION */}
       <section className="max-w-xl mx-auto text-center mb-14 px-4">
         <figure className="bg-surface dark:bg-dark-surface rounded-xl p-6 border border-muted dark:border-dark-muted shadow-sm">
           <blockquote className="italic text-secondary mb-2" style={{ color: "#64748b" }}>
@@ -142,12 +147,10 @@ export default function HomePage() {
       {/* FOOTER */}
       <footer className="w-full mt-auto bg-surface dark:bg-dark-surface border-t border-muted dark:border-dark-muted py-8 px-4">
         <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 text-xs sm:text-sm text-secondary">
-          {/* About */}
           <div>
             <span className="font-bold text-primary mr-2" style={{ color: "var(--primary,#2563eb)" }}>TinyHabitTracker</span>
             A minimalist habit tracker for daily check-ins.
           </div>
-          {/* Contact + GitHub */}
           <div className="flex items-center gap-4">
             <a href="mailto:support@tinyhabittracker.dev" className="hover:underline" style={{ color: "#2563eb", fontWeight: 500 }}>Contact</a>
             <a href="https://github.com/your-github/tinyhabittracker" target="_blank" rel="noopener noreferrer" className="hover:underline" style={{ color: "#22d3ee" }}>
