@@ -1,8 +1,8 @@
 const express = require('express');
 const healthController = require('../controllers/health');
+// Exports only health endpoint here (for / route), auth routes are in src/routes/auth.js
 
 const router = express.Router();
-// Health endpoint
 
 /**
  * @swagger

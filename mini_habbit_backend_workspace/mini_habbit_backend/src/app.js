@@ -1,10 +1,16 @@
 const cors = require('cors');
 const express = require('express');
+const cookieParser = require('cookie-parser');
 const routes = require('./routes');
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpec = require('../swagger');
 
-// Initialize express app
+/**
+ * PUBLIC_INTERFACE
+ * Express application root: mounts global middleware, Swagger, and routes.
+ * Adds cookie-parser for secure session management.
+ * Protects all /api routes (e.g., /api/habits, /api/logs) with authentication middleware.
+ */
 const app = express();
 
 app.use(cors({
@@ -13,6 +19,7 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
+// Swagger docs
 app.use('/docs', swaggerUi.serve, (req, res, next) => {
   const dynamicSpec = {
     ...swaggerSpec,
@@ -25,10 +32,22 @@ app.use('/docs', swaggerUi.serve, (req, res, next) => {
   swaggerUi.setup(dynamicSpec)(req, res, next);
 });
 
-// Parse JSON request body
+// Body/JSON/cookie parsing
 app.use(express.json());
+app.use(cookieParser());
 
-// Mount routes
+// Mount /auth endpoints (unprotected except /me)
+const authRoutes = require('./routes/auth');
+app.use('/auth', authRoutes);
+
+// API route-protection: all /api endpoints require authentication
+const { authMiddleware } = require('./middleware/auth');
+
+// You must add code like: app.use('/api', authMiddleware);
+// This will be invoked before any /api/* route handlers (habits, logs, etc)
+app.use('/api', authMiddleware);
+
+// Mount legacy/health check and other routes (these are public)
 app.use('/', routes);
 
 // Error handling middleware
