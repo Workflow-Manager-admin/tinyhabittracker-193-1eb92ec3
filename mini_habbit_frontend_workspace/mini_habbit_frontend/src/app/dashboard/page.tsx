@@ -3,8 +3,10 @@
  * Route: /dashboard
  * PUBLIC_INTERFACE
  * Displays a sidebar/navbar and main content listing user habits.
- * Protected: Only available to authenticated users.
- * Uses SSR to check authentication; redirects unauthenticated users to /login.
+ * Protected: Only available to authenticated users (SSR checks authentication and redirects to /login for unauthenticated).
+ * 
+ * Client-side enhancement: For extra robustness, you may wrap your dashboard's main content in the <AuthGuard> component
+ * (see src/app/AuthGuard.tsx) to reactively redirect on lost login state during client-side navigation or logout.
  */
 
 import HabitList from "./HabitList";

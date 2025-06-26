@@ -35,6 +35,12 @@ export function NavBar() {
             >
               Profile
             </a>
+            {/* 
+              Logout button triggers logout logic: 
+              - Calls useAuth().logout() (calls backend API, clears state)
+              - Then client-side redirect to /login.
+              For full session-clear (especially with SSR routes) use server-side POST /logout instead (see dashboard page and /logout/route.ts).
+            */}
             <button
               type="button"
               onClick={() => logout().then(() => router.replace("/login"))}
