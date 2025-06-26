@@ -13,10 +13,25 @@ const swaggerSpec = require('../swagger');
  */
 const app = express();
 
+const allowedOrigins = [
+  process.env.FRONTEND_ORIGIN || 'http://localhost:3000',
+  'http://localhost:3000'
+];
+
 app.use(cors({
-  origin: '*',
+  origin: function(origin, callback) {
+    // allow requests with no origin (like mobile apps/curl)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      return callback(null, true);
+    } else {
+      return callback(new Error('CORS origin not allowed'), false);
+    }
+  },
+  credentials: true, // allow cookies (HTTP-only)
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  exposedHeaders: ['Set-Cookie']
 }));
 
 /**
