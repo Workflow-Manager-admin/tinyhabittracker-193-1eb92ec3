@@ -23,6 +23,28 @@ export async function editHabitName(id: number, name: string): Promise<{ id: num
   return res.json();
 }
 
+/**
+ * PUBLIC_INTERFACE
+ * Delete a habit (DELETE /api/habits/:id).
+ * @param id number - Habit ID to delete.
+ * Returns: nothing if successful, throws error on failure.
+ */
+export async function deleteHabit(id: number): Promise<void> {
+  const res = await fetch(`${API_BASE}/api/habits/${id}`, {
+    method: "DELETE",
+    credentials: "include",
+  });
+  if (!res.ok) {
+    let errString = "Failed to delete habit";
+    try {
+      const data = await res.json();
+      errString = data?.error || errString;
+    } catch {}
+    throw new Error(errString);
+  }
+  // nothing returned on success
+}
+
 // PUBLIC_INTERFACE
 export async function fetchHabitsWithLogs(): Promise<Habit[]> {
   // Habits: GET /api/habits

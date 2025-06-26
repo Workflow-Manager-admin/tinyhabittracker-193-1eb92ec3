@@ -2,7 +2,7 @@
 
 import React from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { fetchHabitsWithLogs, markHabitCheckmark, createHabit, editHabitName } from "./api";
+import { fetchHabitsWithLogs, markHabitCheckmark, createHabit, editHabitName, deleteHabit } from "./api";
 
 /**
  * PUBLIC_INTERFACE
@@ -150,6 +150,27 @@ export default function HabitList({ habits }: { habits?: Habit[] }) {
     },
     onError: (err: any, _vars, context) => {
       setFormError(err?.message || "Could not create habit.");
+      if (context?.previous) {
+        queryClient.setQueryData(["habits-with-logs"], context.previous);
+      }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["habits-with-logs"] });
+    },
+  });
+
+  // --- Mutation for deleting a habit (optimistic update) ---
+  const deleteHabitMutation = useMutation({
+    mutationFn: async (habitId: number) => deleteHabit(habitId),
+    onMutate: async (habitId: number) => {
+      await queryClient.cancelQueries({ queryKey: ["habits-with-logs"] });
+      const previous = queryClient.getQueryData<Habit[]>(["habits-with-logs"]);
+      queryClient.setQueryData<Habit[]>(["habits-with-logs"], (old) =>
+        old ? old.filter((h) => h.id !== habitId) : []
+      );
+      return { previous };
+    },
+    onError: (_err, _vars, context) => {
       if (context?.previous) {
         queryClient.setQueryData(["habits-with-logs"], context.previous);
       }
@@ -327,6 +348,19 @@ export default function HabitList({ habits }: { habits?: Habit[] }) {
                   title="Edit habit name"
                 >
                   Edit
+                </button>
+                <button
+                  type="button"
+                  className="ml-1 px-2 py-1 rounded text-xs text-red-600 border border-red-200 hover:bg-red-50 dark:text-red-400 dark:border-red-700 dark:hover:bg-red-900 transition"
+                  onClick={() => {
+                    if (window.confirm("Delete this habit? This cannot be undone.")) {
+                      deleteHabitMutation.mutate(habit.id);
+                    }
+                  }}
+                  disabled={deleteHabitMutation.isPending}
+                  title="Delete habit"
+                >
+                  Delete
                 </button>
               </>
             )}
