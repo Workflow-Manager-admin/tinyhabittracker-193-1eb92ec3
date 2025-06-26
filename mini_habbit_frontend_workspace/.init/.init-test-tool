@@ -1,0 +1,4 @@
+{
+    "command": "npm run build",
+    "working_directory": "/home/kavia/workspace/code-generation/tinyhabittracker-193-1eb92ec3/mini_habbit_frontend_workspace/mini_habbit_frontend"
+}

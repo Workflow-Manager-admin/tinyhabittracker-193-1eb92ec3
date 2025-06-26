@@ -1,0 +1,4 @@
+{
+    "command": "CI=true PORT=<port> HOST=<host> npm run dev",
+    "working_directory": "/home/kavia/workspace/code-generation/tinyhabittracker-193-1eb92ec3/mini_habbit_backend_workspace/mini_habbit_backend"
+}
