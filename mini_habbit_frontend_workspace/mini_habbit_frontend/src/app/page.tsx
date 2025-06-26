@@ -1,101 +1,61 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen px-2 py-8 sm:p-8 pb-20 gap-8 sm:gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-6 sm:gap-8 row-start-2 items-center sm:items-start w-full max-w-2xl">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+import React, { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "./auth";
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
+/**
+ * PUBLIC_INTERFACE
+ * Home Page ("/").
+ * - Minimalist: No Next.js or Vercel starter content.
+ * - Authenticated users are redirected to /dashboard.
+ * - Unauthenticated users see a simple welcome/cta for TinyHabitTracker.
+ */
+export default function HomePage() {
+  const { user, loading } = useAuth();
+  const router = useRouter();
+
+  // Redirect immediately to dashboard if logged in
+  useEffect(() => {
+    if (!loading && user) {
+      router.replace("/dashboard");
+    }
+  }, [user, loading, router]);
+
+  // While checking auth, show nothing (or a subtle loading).
+  if (loading) {
+    return (
+      <main className="flex flex-col items-center justify-center min-h-screen px-2">
+        <span className="text-gray-500 dark:text-zinc-400 text-lg">Loading…</span>
       </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
+    );
+  }
+
+  // Show minimalist landing (only if not logged in)
+  return (
+    <main className="flex flex-col items-center justify-center min-h-screen px-3 bg-white dark:bg-zinc-900">
+      <div className="w-full max-w-md rounded-lg border border-gray-200 dark:border-zinc-700 shadow-lg p-8 flex flex-col items-center gap-4 bg-white dark:bg-zinc-900">
+        <span className="text-primary text-4xl font-extrabold tracking-tight mb-2">TinyHabitTracker</span>
+        <span className="text-gray-700 dark:text-zinc-200 text-center text-lg mb-4">
+          Build great habits, one tiny step at a time. <br />
+          Simple. Private. Effective.
+        </span>
         <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+          href="/register"
+          className="mt-4 px-6 py-2 rounded font-semibold text-white text-lg bg-primary hover:bg-blue-700 transition shadow focus:outline-none focus:ring-2 focus:ring-primary"
         >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
+          Get Started — Sign Up
         </a>
         <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+          href="/login"
+          className="text-primary text-sm mt-2 hover:underline"
         >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
+          Already have an account? Sign In
         </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
+      </div>
+      <footer className="mt-8 text-xs text-gray-400 dark:text-zinc-700 text-center">
+        © {new Date().getFullYear()} TinyHabitTracker. All rights reserved.
       </footer>
-    </div>
+    </main>
   );
 }
